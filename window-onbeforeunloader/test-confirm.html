@@ -1,0 +1,81 @@
+<html>
+	<head>
+		<title>Тестовый скрипт</title>
+		<script type="text/javascript" src="jquery.js"></script>
+	</head>
+	<body>
+		<script type="text/javascript">
+			//------
+			//Закрытие/перезагрузка окна
+			function WindowUnloader(message, callbackCheck){
+			    this.registerUnloadMessage = function(){
+                    window.onbeforeunload = function() {
+                        if(callbackCheck()){
+                            return message;
+                        }
+                    };
+				}
+
+                this.registerUnloadMessage();
+			}
+			
+			//Отслеживание изменений на форме
+			function FormTextChangesChecker(elementsNames, containerElementName){
+			    var self = this;
+                this.containerElement = $(containerElementName || document);
+
+			    this.elementsNames = elementsNames;
+			    this.dataAttrName = 'changed';
+			    this.formName = containerElementName || 'form';
+
+
+			    this.init = function(){
+                    this.checkConstructorParameters();
+
+                    $(document).delegate(this.formName, 'submit', function(){
+                        $(self.elementsNames).removeData(self.dataAttrName);
+                    });
+
+					this.containerElement.delegate(self.elementsNames, 'change', function(){
+                        $(this).data(self.dataAttrName, 'changed');
+                    });
+				}
+
+                this.checkConstructorParameters = function(){
+                    if(!self.elementsNames){
+                        throw new Error('Не переданы теги элементов.');
+                    }
+                }
+
+				this.hasChanges = function(){
+					var warn = false;
+
+                    $(self.elementsNames).blur().each(function(){
+                        if ($(this).data(self.dataAttrName)) {
+                            warn = true;
+							//Break looping
+							return false;
+						}
+					});
+
+					return warn;
+				}
+
+				//--
+                this.init();
+			}
+			
+			$(document).ready(function(){
+                var formTextChangesChecker = new FormTextChangesChecker('input, textarea', 'form#asdfsdf1');
+                var windowUnloader = new WindowUnloader('Are you sure you want to navigate away from this page?', formTextChangesChecker.hasChanges.bind(formTextChangesChecker));
+			});
+		</script>
+		
+		<form id="asdfsdf1">
+			<input type="text" name="input-1" /><br><br>
+			<textarea name="textarea-1" style="width: 250px; height: 250px;"></textarea><br><br>
+
+            <input type="submit" value="Отправить" />
+		</form>
+	</body>
+</html>

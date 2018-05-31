@@ -1,0 +1,6 @@
+# Ignore my custom setups
+.idea
+/.project
+/.buildpath
+/.vscode
+/.settings/
