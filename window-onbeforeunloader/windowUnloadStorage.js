@@ -71,7 +71,7 @@ function FormTextChangesChecker(elementsNames, containerElementName){
     this.hasChanges = function(){
         var warn = false;
 
-        $(self.elementsNames).blur().each(function(){
+        $(this.formName).find(self.elementsNames).blur().each(function(){
             if ($(this).data(self.dataAttrName)) {
                 warn = true;
                 //Break looping
